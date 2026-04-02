@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.api.wanikani.com)",
+      "WebFetch(domain:community.wanikani.com)",
+      "WebFetch(domain:www.wanikani.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:wkstats.com)",
+      "WebFetch(domain:knowledge.wanikani.com)"
+    ]
+  }
+}
