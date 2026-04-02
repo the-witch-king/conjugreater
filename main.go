@@ -37,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	listener, err := net.Listen("tcp", "127.0.0.1:6666")
+	listener, err := net.Listen("tcp", "127.0.0.1:8666")
 	if err != nil {
 		// Port in use, pick a random available one
 		listener, err = net.Listen("tcp", "127.0.0.1:0")
