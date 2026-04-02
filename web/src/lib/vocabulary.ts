@@ -5,7 +5,7 @@ interface VocabularyData {
 }
 
 export async function loadVocabulary(): Promise<Word[]> {
-	const response = await fetch('./vocabulary.json');
+	const response = await fetch('/vocabulary.json');
 	if (!response.ok) {
 		throw new Error(`Failed to load vocabulary: ${response.status}`);
 	}

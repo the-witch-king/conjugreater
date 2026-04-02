@@ -8,9 +8,10 @@
 		onToggle: (form: ConjugationForm) => void;
 		onToggleShowType: () => void;
 		onStart: () => void;
+		onOpenSettings: () => void;
 	}
 
-	let { enabledForms, alwaysShowType, onToggle, onToggleShowType, onStart }: Props = $props();
+	let { enabledForms, alwaysShowType, onToggle, onToggleShowType, onStart, onOpenSettings }: Props = $props();
 </script>
 
 <div class="max-w-md mx-auto">
@@ -30,7 +31,7 @@
 		{/each}
 	</div>
 
-	<h2 class="text-xl font-semibold mb-4 text-gray-800">Settings</h2>
+	<h2 class="text-xl font-semibold mb-4 text-gray-800">Options</h2>
 
 	<label class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer mb-6">
 		<input
@@ -47,8 +48,17 @@
 		disabled={enabledForms.size === 0}
 		class="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg
 			hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
-			disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+			disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-3"
 	>
 		Start Practice
+	</button>
+
+	<button
+		onclick={onOpenSettings}
+		class="w-full py-2 px-4 text-gray-600 text-sm font-medium rounded-lg
+			hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
+			transition-colors"
+	>
+		Settings
 	</button>
 </div>

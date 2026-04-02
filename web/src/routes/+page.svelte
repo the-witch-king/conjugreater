@@ -7,11 +7,13 @@
 	import type { Word, ConjugationForm, QuizQuestion, AnswerRecord } from '$lib/types';
 	import FormSelector from '../components/FormSelector.svelte';
 	import QuizComponent from '../components/Quiz.svelte';
+	import Settings from '../components/Settings.svelte';
 
 	let adjectives = $state<Word[]>([]);
 	let loading = $state(true);
 	let error = $state('');
 	let alwaysShowType = $state(false);
+	let showSettings = $state(false);
 
 	// Quiz state
 	let quizState = $state<'setup' | 'prompting' | 'evaluating'>('setup');
@@ -22,7 +24,9 @@
 	let typeRevealed = $state(false);
 	let history = $state<AnswerRecord[]>([]);
 
-	onMount(async () => {
+	async function reloadVocabulary() {
+		loading = true;
+		error = '';
 		try {
 			adjectives = await loadVocabulary();
 		} catch (e) {
@@ -30,7 +34,9 @@
 		} finally {
 			loading = false;
 		}
-	});
+	}
+
+	onMount(reloadVocabulary);
 
 	function start() {
 		if (enabledForms.size === 0 || adjectives.length === 0) return;
@@ -94,7 +100,12 @@
 
 <div class="min-h-screen bg-gray-50 px-4 flex items-center justify-center">
 	<div class="max-w-lg w-full">
-		{#if loading}
+		{#if showSettings}
+			<Settings
+				onClose={() => (showSettings = false)}
+				onVocabularyUpdated={reloadVocabulary}
+			/>
+		{:else if loading}
 			<p class="text-center text-gray-500">Loading vocabulary...</p>
 		{:else if error}
 			<div class="bg-red-50 text-red-700 p-4 rounded-lg">
@@ -102,12 +113,20 @@
 				<p class="text-sm">{error}</p>
 			</div>
 		{:else if adjectives.length === 0}
-			<div class="bg-yellow-50 text-yellow-700 p-4 rounded-lg">
-				<p class="font-medium">No adjectives found</p>
+			<div class="bg-yellow-50 text-yellow-700 p-4 rounded-lg mb-4">
+				<p class="font-medium">No vocabulary loaded</p>
 				<p class="text-sm">
-					Run the fetcher first to populate vocabulary data.
+					Configure your WaniKani API token and fetch vocabulary to get started.
 				</p>
 			</div>
+			<button
+				onclick={() => (showSettings = true)}
+				class="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg
+					hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+					transition-colors"
+			>
+				Open Settings
+			</button>
 		{:else if quizState === 'setup'}
 			<FormSelector
 				{enabledForms}
@@ -115,6 +134,7 @@
 				onToggle={toggleForm}
 				onToggleShowType={() => (alwaysShowType = !alwaysShowType)}
 				onStart={start}
+				onOpenSettings={() => (showSettings = true)}
 			/>
 		{:else if currentQuestion}
 			<QuizComponent
