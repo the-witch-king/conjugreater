@@ -11,6 +11,7 @@
 		typeRevealed: boolean;
 		adjType: string;
 		history: AnswerRecord[];
+		targetCount: number;
 		onInput: (value: string) => void;
 		onSubmit: () => void;
 		onNext: () => void;
@@ -27,6 +28,7 @@
 		typeRevealed,
 		adjType,
 		history,
+		targetCount,
 		onInput,
 		onSubmit,
 		onNext,
@@ -54,20 +56,28 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="max-w-md mx-auto">
-	<div class="flex items-center justify-between mb-6">
+	<div class="flex items-center justify-between mb-4">
 		<button onclick={onBack} class="text-sm text-gray-500 hover:text-gray-700">
 			&larr; Back to settings
 		</button>
 
-		{#if history.length > 0}
-			{@const correctCount = history.filter((r) => r.correct).length}
-			{@const wrongCount = history.length - correctCount}
-			<div class="flex items-center gap-3 text-sm">
+		<div class="flex items-center gap-3 text-sm">
+			<span class="text-gray-500 font-medium">{history.length}/{targetCount}</span>
+			{#if history.length > 0}
+				{@const correctCount = history.filter((r) => r.correct).length}
 				<span class="text-green-600 font-medium">{correctCount} correct</span>
 				<span class="text-gray-300">|</span>
-				<span class="text-red-500 font-medium">{wrongCount} wrong</span>
-			</div>
-		{/if}
+				<span class="text-red-500 font-medium">{history.length - correctCount} wrong</span>
+			{/if}
+		</div>
+	</div>
+
+	<!-- Progress bar -->
+	<div class="w-full bg-gray-200 rounded-full h-1.5 mb-6">
+		<div
+			class="bg-indigo-600 h-1.5 rounded-full transition-all duration-300"
+			style="width: {Math.round((history.length / targetCount) * 100)}%"
+		></div>
 	</div>
 
 	<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

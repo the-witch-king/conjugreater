@@ -5,13 +5,15 @@
 	interface Props {
 		enabledForms: Set<ConjugationForm>;
 		alwaysShowType: boolean;
+		targetCount: number;
 		onToggle: (form: ConjugationForm) => void;
 		onToggleShowType: () => void;
+		onTargetChange: (value: number) => void;
 		onStart: () => void;
 		onOpenSettings: () => void;
 	}
 
-	let { enabledForms, alwaysShowType, onToggle, onToggleShowType, onStart, onOpenSettings }: Props = $props();
+	let { enabledForms, alwaysShowType, targetCount, onToggle, onToggleShowType, onTargetChange, onStart, onOpenSettings }: Props = $props();
 </script>
 
 <div class="max-w-md mx-auto">
@@ -32,6 +34,20 @@
 	</div>
 
 	<h2 class="text-xl font-semibold mb-4 text-gray-800">Options</h2>
+
+	<div class="flex items-center gap-3 p-2 mb-2">
+		<label for="target-count" class="text-gray-700">Questions</label>
+		<input
+			id="target-count"
+			type="number"
+			min="1"
+			max="999"
+			value={targetCount}
+			oninput={(e) => onTargetChange(Math.max(1, parseInt(e.currentTarget.value) || 1))}
+			class="w-20 px-2 py-1 border border-gray-300 rounded-lg text-center
+				focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+		/>
+	</div>
 
 	<label class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer mb-6">
 		<input
