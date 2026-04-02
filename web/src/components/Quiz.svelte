@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ResultFeedback from './ResultFeedback.svelte';
-	import type { QuizQuestion } from '$lib/types';
+	import type { QuizQuestion, AnswerRecord } from '$lib/types';
 
 	interface Props {
 		question: QuizQuestion;
@@ -10,6 +10,7 @@
 		alwaysShowType: boolean;
 		typeRevealed: boolean;
 		adjType: string;
+		history: AnswerRecord[];
 		onInput: (value: string) => void;
 		onSubmit: () => void;
 		onNext: () => void;
@@ -25,6 +26,7 @@
 		alwaysShowType,
 		typeRevealed,
 		adjType,
+		history,
 		onInput,
 		onSubmit,
 		onNext,
@@ -32,12 +34,16 @@
 		onRevealType
 	}: Props = $props();
 
+	let inputEl: HTMLInputElement | undefined;
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Enter') {
 			if (quizState === 'prompting') {
 				onSubmit();
 			} else {
 				onNext();
+				// Focus after Svelte re-enables the input on next tick
+				requestAnimationFrame(() => inputEl?.focus());
 			}
 		} else if (e.key === 'Escape' && quizState === 'prompting') {
 			onInput('');
@@ -48,9 +54,21 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="max-w-md mx-auto">
-	<button onclick={onBack} class="text-sm text-gray-500 hover:text-gray-700 mb-6 block">
-		&larr; Back to settings
-	</button>
+	<div class="flex items-center justify-between mb-6">
+		<button onclick={onBack} class="text-sm text-gray-500 hover:text-gray-700">
+			&larr; Back to settings
+		</button>
+
+		{#if history.length > 0}
+			{@const correctCount = history.filter((r) => r.correct).length}
+			{@const wrongCount = history.length - correctCount}
+			<div class="flex items-center gap-3 text-sm">
+				<span class="text-green-600 font-medium">{correctCount} correct</span>
+				<span class="text-gray-300">|</span>
+				<span class="text-red-500 font-medium">{wrongCount} wrong</span>
+			</div>
+		{/if}
+	</div>
 
 	<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 		<!-- Word display -->
@@ -84,6 +102,7 @@
 		<!-- Input -->
 		<div>
 			<input
+				bind:this={inputEl}
 				type="text"
 				lang="ja"
 				value={userAnswer}
@@ -117,4 +136,36 @@
 			{/if}
 		</div>
 	</div>
+
+	<!-- Answer history -->
+	{#if history.length > 0}
+		<details class="mt-6">
+			<summary class="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
+				History ({history.length} answers)
+			</summary>
+			<div class="mt-2 space-y-1">
+				{#each [...history].reverse() as record}
+					<div
+						class="flex items-center justify-between text-sm p-2 rounded {record.correct
+							? 'bg-green-50'
+							: 'bg-red-50'}"
+					>
+						<div>
+							<span class="font-medium">{record.word.characters}</span>
+							<span class="text-gray-400 mx-1">&rarr;</span>
+							<span class="text-gray-600">{record.formLabel}</span>
+						</div>
+						<div>
+							{#if record.correct}
+								<span class="text-green-600">{record.userAnswer}</span>
+							{:else}
+								<span class="text-red-500 line-through">{record.userAnswer}</span>
+								<span class="text-green-600 ml-1">{record.correctAnswer}</span>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
+		</details>
+	{/if}
 </div>

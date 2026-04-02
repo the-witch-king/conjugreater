@@ -24,10 +24,10 @@ export interface FormInfo {
 export const ALL_FORMS: FormInfo[] = [
 	{ id: 'affirmative_present', label: 'Affirmative present' },
 	{ id: 'affirmative_past', label: 'Affirmative past' },
-	{ id: 'negative_present_dewa', label: 'Negative present (では)' },
-	{ id: 'negative_present_ja', label: 'Negative present (じゃ)' },
-	{ id: 'negative_past_dewa', label: 'Negative past (では)' },
-	{ id: 'negative_past_ja', label: 'Negative past (じゃ)' }
+	{ id: 'negative_present_dewa', label: 'Negative present (polite formal)' },
+	{ id: 'negative_present_ja', label: 'Negative present (polite casual)' },
+	{ id: 'negative_past_dewa', label: 'Negative past (polite formal)' },
+	{ id: 'negative_past_ja', label: 'Negative past (polite casual)' }
 ];
 
 export interface QuizQuestion {
@@ -36,4 +36,13 @@ export interface QuizQuestion {
 	formLabel: string;
 	correctAnswer: string;
 	acceptedAnswers: string[];
+}
+
+export interface AnswerRecord {
+	word: Word;
+	form: ConjugationForm;
+	formLabel: string;
+	correctAnswer: string;
+	userAnswer: string;
+	correct: boolean;
 }

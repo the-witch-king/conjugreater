@@ -4,7 +4,7 @@
 	import { loadVocabulary } from '$lib/vocabulary';
 	import { conjugate } from '$lib/conjugation';
 	import { ALL_FORMS } from '$lib/types';
-	import type { Word, ConjugationForm, QuizQuestion } from '$lib/types';
+	import type { Word, ConjugationForm, QuizQuestion, AnswerRecord } from '$lib/types';
 	import FormSelector from '../components/FormSelector.svelte';
 	import QuizComponent from '../components/Quiz.svelte';
 
@@ -20,6 +20,7 @@
 	let userAnswer = $state('');
 	let isCorrect = $state(false);
 	let typeRevealed = $state(false);
+	let history = $state<AnswerRecord[]>([]);
 
 	onMount(async () => {
 		try {
@@ -59,12 +60,21 @@
 	function submit() {
 		if (!currentQuestion || quizState !== 'prompting') return;
 		isCorrect = currentQuestion.acceptedAnswers.includes(userAnswer.trim());
+		history.push({
+			word: currentQuestion.word,
+			form: currentQuestion.form,
+			formLabel: currentQuestion.formLabel,
+			correctAnswer: currentQuestion.correctAnswer,
+			userAnswer: userAnswer.trim(),
+			correct: isCorrect
+		});
 		quizState = 'evaluating';
 	}
 
 	function backToSetup() {
 		quizState = 'setup';
 		currentQuestion = null;
+		history = [];
 	}
 
 	function toggleForm(form: ConjugationForm) {
@@ -82,10 +92,8 @@
 	<title>Conjugreater</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 py-8 px-4">
-	<div class="max-w-lg mx-auto">
-		<h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Conjugreater</h1>
-
+<div class="min-h-screen bg-gray-50 px-4 flex items-center justify-center">
+	<div class="max-w-lg w-full">
 		{#if loading}
 			<p class="text-center text-gray-500">Loading vocabulary...</p>
 		{:else if error}
@@ -116,6 +124,7 @@
 				{isCorrect}
 				{alwaysShowType}
 				{typeRevealed}
+				{history}
 				adjType={currentQuestion.word.pos.includes('i_adjective') ? 'い adjective' : 'な adjective'}
 				onInput={(v) => (userAnswer = v)}
 				onSubmit={submit}
