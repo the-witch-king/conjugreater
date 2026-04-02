@@ -31,7 +31,7 @@ type SubjectData struct {
 	Characters   string    `json:"characters"`
 	Meanings     []Meaning `json:"meanings"`
 	Readings     []Reading `json:"readings"`
-	PartOfSpeech []string  `json:"part_of_speech"`
+	PartOfSpeech []string  `json:"parts_of_speech"`
 	Level        int       `json:"level"`
 	Slug         string    `json:"slug"`
 }
