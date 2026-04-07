@@ -13,6 +13,8 @@
 	let loading = $state(true);
 	let error = $state('');
 	let alwaysShowType = $state(false);
+	let includeIAdjectives = $state(true);
+	let includeNaAdjectives = $state(true);
 	let showSettings = $state(false);
 
 	// Quiz state
@@ -39,8 +41,16 @@
 
 	onMount(reloadVocabulary);
 
+	function filteredAdjectives(): Word[] {
+		return adjectives.filter((w) => {
+			if (includeIAdjectives && w.pos.includes('i_adjective')) return true;
+			if (includeNaAdjectives && w.pos.includes('na_adjective')) return true;
+			return false;
+		});
+	}
+
 	function start() {
-		if (enabledForms.size === 0 || adjectives.length === 0) return;
+		if (enabledForms.size === 0 || filteredAdjectives().length === 0) return;
 		nextQuestion();
 	}
 
@@ -50,7 +60,8 @@
 			return;
 		}
 
-		const word = adjectives[Math.floor(Math.random() * adjectives.length)];
+		const pool = filteredAdjectives();
+		const word = pool[Math.floor(Math.random() * pool.length)];
 		const forms = Array.from(enabledForms);
 		const formId = forms[Math.floor(Math.random() * forms.length)];
 		const formInfo = ALL_FORMS.find((f) => f.id === formId)!;
@@ -138,9 +149,13 @@
 				{enabledForms}
 				{alwaysShowType}
 				{targetCount}
+				{includeIAdjectives}
+				{includeNaAdjectives}
 				onToggle={toggleForm}
 				onToggleShowType={() => (alwaysShowType = !alwaysShowType)}
 				onTargetChange={(v) => (targetCount = v)}
+				onToggleIAdjectives={() => (includeIAdjectives = !includeIAdjectives)}
+				onToggleNaAdjectives={() => (includeNaAdjectives = !includeNaAdjectives)}
 				onStart={start}
 				onOpenSettings={() => (showSettings = true)}
 			/>

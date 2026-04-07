@@ -6,14 +6,18 @@
 		enabledForms: Set<ConjugationForm>;
 		alwaysShowType: boolean;
 		targetCount: number;
+		includeIAdjectives: boolean;
+		includeNaAdjectives: boolean;
 		onToggle: (form: ConjugationForm) => void;
 		onToggleShowType: () => void;
 		onTargetChange: (value: number) => void;
+		onToggleIAdjectives: () => void;
+		onToggleNaAdjectives: () => void;
 		onStart: () => void;
 		onOpenSettings: () => void;
 	}
 
-	let { enabledForms, alwaysShowType, targetCount, onToggle, onToggleShowType, onTargetChange, onStart, onOpenSettings }: Props = $props();
+	let { enabledForms, alwaysShowType, targetCount, includeIAdjectives, includeNaAdjectives, onToggle, onToggleShowType, onTargetChange, onToggleIAdjectives, onToggleNaAdjectives, onStart, onOpenSettings }: Props = $props();
 </script>
 
 <div class="max-w-md mx-auto">
@@ -31,6 +35,29 @@
 				<span class="text-gray-700">{form.label}</span>
 			</label>
 		{/each}
+	</div>
+
+	<h2 class="text-xl font-semibold mb-4 text-gray-800">Adjective types</h2>
+
+	<div class="space-y-2 mb-6">
+		<label class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+			<input
+				type="checkbox"
+				checked={includeIAdjectives}
+				onchange={onToggleIAdjectives}
+				class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+			/>
+			<span class="text-gray-700">い adjectives</span>
+		</label>
+		<label class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+			<input
+				type="checkbox"
+				checked={includeNaAdjectives}
+				onchange={onToggleNaAdjectives}
+				class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+			/>
+			<span class="text-gray-700">な adjectives</span>
+		</label>
 	</div>
 
 	<h2 class="text-xl font-semibold mb-4 text-gray-800">Options</h2>
@@ -61,7 +88,7 @@
 
 	<button
 		onclick={onStart}
-		disabled={enabledForms.size === 0}
+		disabled={enabledForms.size === 0 || (!includeIAdjectives && !includeNaAdjectives)}
 		class="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg
 			hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
 			disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-3"
