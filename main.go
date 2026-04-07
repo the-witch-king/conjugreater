@@ -17,8 +17,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/the-witch-king/conjugreater/fetcher/vocabulary"
-	"github.com/the-witch-king/conjugreater/fetcher/wanikani"
+	"github.com/the-witch-king/conjugreater/vocabulary"
+	"github.com/the-witch-king/conjugreater/wanikani"
 )
 
 //go:embed web/build/*
