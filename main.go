@@ -50,7 +50,7 @@ func main() {
 	mux.HandleFunc("GET /api/config", handleGetConfig)
 	mux.HandleFunc("POST /api/config", handlePostConfig)
 	mux.HandleFunc("POST /api/fetch", handleFetch)
-	mux.HandleFunc("GET /vocabulary.json", handleVocabulary(static))
+	mux.HandleFunc("GET /vocabulary.json", handleVocabulary)
 	mux.Handle("/", http.FileServer(http.FS(static)))
 
 	addr := listener.Addr().String()
@@ -231,25 +231,14 @@ func handleFetch(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handleVocabulary serves vocabulary.json from disk if available, otherwise falls back to embedded.
-func handleVocabulary(static fs.FS) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if data, err := os.ReadFile(vocabPath()); err == nil {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(data)
-			return
-		}
-		// Fall back to embedded
-		f, err := static.Open("vocabulary.json")
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		defer f.Close()
-		w.Header().Set("Content-Type", "application/json")
-		data, _ := fs.ReadFile(static, "vocabulary.json")
+// handleVocabulary serves vocabulary.json from disk, or an empty word list if not yet fetched.
+func handleVocabulary(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if data, err := os.ReadFile(vocabPath()); err == nil {
 		w.Write(data)
+		return
 	}
+	w.Write([]byte(`{"words":[]}`))
 }
 
 func openBrowser(url string) {
