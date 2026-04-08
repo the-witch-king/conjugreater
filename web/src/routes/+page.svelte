@@ -4,6 +4,7 @@
 	import { loadVocabulary } from '$lib/vocabulary';
 	import { conjugate } from '$lib/conjugation';
 	import { ALL_FORMS } from '$lib/types';
+	import { loadSettings, saveSettings, resetSettings, defaults } from '$lib/settings';
 	import type { Word, ConjugationForm, QuizQuestion, AnswerRecord } from '$lib/types';
 	import FormSelector from '../components/FormSelector.svelte';
 	import QuizComponent from '../components/Quiz.svelte';
@@ -12,20 +13,30 @@
 	let adjectives = $state<Word[]>([]);
 	let loading = $state(true);
 	let error = $state('');
-	let alwaysShowType = $state(false);
-	let includeIAdjectives = $state(true);
-	let includeNaAdjectives = $state(true);
+	let alwaysShowType = $state(defaults.alwaysShowType);
+	let includeIAdjectives = $state(defaults.includeIAdjectives);
+	let includeNaAdjectives = $state(defaults.includeNaAdjectives);
 	let showSettings = $state(false);
 
 	// Quiz state
 	let quizState = $state<'setup' | 'prompting' | 'evaluating' | 'complete'>('setup');
-	let targetCount = $state(20);
-	let enabledForms = $state<Set<ConjugationForm>>(new Set(ALL_FORMS.map((f) => f.id)));
+	let targetCount = $state(defaults.targetCount);
+	let enabledForms = $state<Set<ConjugationForm>>(new Set(defaults.enabledForms));
 	let currentQuestion = $state<QuizQuestion | null>(null);
 	let userAnswer = $state('');
 	let isCorrect = $state(false);
 	let typeRevealed = $state(false);
 	let history = $state<AnswerRecord[]>([]);
+
+	function persistSettings() {
+		saveSettings({
+			enabledForms: Array.from(enabledForms),
+			alwaysShowType,
+			targetCount,
+			includeIAdjectives,
+			includeNaAdjectives
+		});
+	}
 
 	async function reloadVocabulary() {
 		loading = true;
@@ -39,7 +50,15 @@
 		}
 	}
 
-	onMount(reloadVocabulary);
+	onMount(() => {
+		const saved = loadSettings();
+		enabledForms = new Set(saved.enabledForms);
+		alwaysShowType = saved.alwaysShowType;
+		targetCount = saved.targetCount;
+		includeIAdjectives = saved.includeIAdjectives;
+		includeNaAdjectives = saved.includeNaAdjectives;
+		reloadVocabulary();
+	});
 
 	function filteredAdjectives(): Word[] {
 		return adjectives.filter((w) => {
@@ -108,6 +127,16 @@
 			next.add(form);
 		}
 		enabledForms = next;
+		persistSettings();
+	}
+
+	function handleReset() {
+		resetSettings();
+		enabledForms = new Set(defaults.enabledForms);
+		alwaysShowType = defaults.alwaysShowType;
+		targetCount = defaults.targetCount;
+		includeIAdjectives = defaults.includeIAdjectives;
+		includeNaAdjectives = defaults.includeNaAdjectives;
 	}
 </script>
 
@@ -152,11 +181,12 @@
 				{includeIAdjectives}
 				{includeNaAdjectives}
 				onToggle={toggleForm}
-				onToggleShowType={() => (alwaysShowType = !alwaysShowType)}
-				onTargetChange={(v) => (targetCount = v)}
-				onToggleIAdjectives={() => (includeIAdjectives = !includeIAdjectives)}
-				onToggleNaAdjectives={() => (includeNaAdjectives = !includeNaAdjectives)}
+				onToggleShowType={() => { alwaysShowType = !alwaysShowType; persistSettings(); }}
+				onTargetChange={(v) => { targetCount = v; persistSettings(); }}
+				onToggleIAdjectives={() => { includeIAdjectives = !includeIAdjectives; persistSettings(); }}
+				onToggleNaAdjectives={() => { includeNaAdjectives = !includeNaAdjectives; persistSettings(); }}
 				onStart={start}
+				onReset={handleReset}
 				onOpenSettings={() => (showSettings = true)}
 			/>
 		{:else if quizState === 'complete'}

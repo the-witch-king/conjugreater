@@ -14,10 +14,11 @@
 		onToggleIAdjectives: () => void;
 		onToggleNaAdjectives: () => void;
 		onStart: () => void;
+		onReset: () => void;
 		onOpenSettings: () => void;
 	}
 
-	let { enabledForms, alwaysShowType, targetCount, includeIAdjectives, includeNaAdjectives, onToggle, onToggleShowType, onTargetChange, onToggleIAdjectives, onToggleNaAdjectives, onStart, onOpenSettings }: Props = $props();
+	let { enabledForms, alwaysShowType, targetCount, includeIAdjectives, includeNaAdjectives, onToggle, onToggleShowType, onTargetChange, onToggleIAdjectives, onToggleNaAdjectives, onStart, onReset, onOpenSettings }: Props = $props();
 </script>
 
 <div class="max-w-md mx-auto">
@@ -96,12 +97,22 @@
 		Start Practice
 	</button>
 
-	<button
-		onclick={onOpenSettings}
-		class="w-full py-2 px-4 text-gray-600 text-sm font-medium rounded-lg
-			hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
-			transition-colors"
-	>
-		Settings
-	</button>
+	<div class="flex gap-3">
+		<button
+			onclick={onOpenSettings}
+			class="flex-1 py-2 px-4 text-gray-600 text-sm font-medium rounded-lg
+				hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
+				transition-colors"
+		>
+			Settings
+		</button>
+		<button
+			onclick={onReset}
+			class="flex-1 py-2 px-4 text-gray-600 text-sm font-medium rounded-lg
+				hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
+				transition-colors"
+		>
+			Reset Defaults
+		</button>
+	</div>
 </div>
