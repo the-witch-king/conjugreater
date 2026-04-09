@@ -157,6 +157,56 @@ describe('exception: かっこいい', () => {
 	}
 });
 
+describe('いい-compound: 運がいい', () => {
+	const word = makeWord({
+		characters: '運がいい',
+		reading: 'うんがいい',
+		pos: ['expression', 'i_adjective'],
+		is_exception: true,
+		exception_id: 'ii_compound'
+	});
+
+	const cases: [ConjugationForm, string][] = [
+		['affirmative_present', '運がいいです'],
+		['affirmative_past', '運がよかったです'],
+		['negative_present_dewa', '運がよくありません'],
+		['negative_present_ja', '運がよくないです'],
+		['negative_past_dewa', '運がよくありませんでした'],
+		['negative_past_ja', '運がよくなかったです']
+	];
+
+	for (const [form, expected] of cases) {
+		it(`${form} → ${expected}`, () => {
+			const result = conjugate(word, form);
+			expect(result[0]).toBe(expected);
+		});
+	}
+});
+
+describe('i-adjective ending in いい but not 良い-related: かわいい', () => {
+	const word = makeWord({
+		characters: 'かわいい',
+		reading: 'かわいい',
+		pos: ['i_adjective']
+	});
+
+	const cases: [ConjugationForm, string][] = [
+		['affirmative_present', 'かわいいです'],
+		['affirmative_past', 'かわいかったです'],
+		['negative_present_dewa', 'かわいくありません'],
+		['negative_present_ja', 'かわいくないです'],
+		['negative_past_dewa', 'かわいくありませんでした'],
+		['negative_past_ja', 'かわいくなかったです']
+	];
+
+	for (const [form, expected] of cases) {
+		it(`${form} → ${expected}`, () => {
+			const result = conjugate(word, form);
+			expect(result[0]).toBe(expected);
+		});
+	}
+});
+
 describe('edge cases', () => {
 	it('returns empty array for unknown POS', () => {
 		const word = makeWord({

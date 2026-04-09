@@ -21,7 +21,7 @@ export function conjugate(word: Word, form: ConjugationForm): string[] {
 }
 
 function conjugateIAdj(characters: string, form: ConjugationForm): string[] {
-	const stem = characters.slice(0, -1); // remove trailing い
+	const stem = characters.slice(0, -1);
 
 	switch (form) {
 		case 'affirmative_present':
@@ -62,9 +62,30 @@ function conjugateException(word: Word, form: ConjugationForm): string[] {
 			return conjugateIi(form);
 		case 'kakkoii':
 			return conjugateKakkoii(form);
+		case 'ii_compound':
+			return conjugateIiCompound(word.characters, form);
 		default:
 			// Unknown exception: fall back to regular i-adjective
 			return conjugateIAdj(word.characters, form);
+	}
+}
+
+function conjugateIiCompound(characters: string, form: ConjugationForm): string[] {
+	const stem = characters.slice(0, -2) + 'よ';
+
+	switch (form) {
+		case 'affirmative_present':
+			return [characters + 'です'];
+		case 'affirmative_past':
+			return [stem + 'かったです'];
+		case 'negative_present_dewa':
+			return [stem + 'くありません'];
+		case 'negative_present_ja':
+			return [stem + 'くないです'];
+		case 'negative_past_dewa':
+			return [stem + 'くありませんでした'];
+		case 'negative_past_ja':
+			return [stem + 'くなかったです'];
 	}
 }
 
